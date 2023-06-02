@@ -1,58 +1,39 @@
-import React, { useState } from 'react';
-import { nanoid } from 'nanoid';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+import { addContact } from 'redux/contactsSlice';
 
 const ContactForm = ({ onSubmit }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-
-  const nameInputId = nanoid();
-
-  const handleInput = e => {
-    const { name, value } = e.currentTarget;
-
-    if (name === 'name') {
-      setName(value);
-    }
-
-    if (name === 'number') {
-      setNumber(value);
-    }
-  };
+  const dispatch = useDispatch();
 
   const handleSubmit = e => {
     e.preventDefault();
-    onSubmit({ name, number });
 
-    resetForm();
-  };
+    const formData = new FormData(e.currentTarget);
+    const newContact = {
+      name: formData.get('name'),
+      number: formData.get('number'),
+    };
 
-  const resetForm = () => {
-    setName('');
-    setNumber('');
+    dispatch(addContact(newContact));
+    e.currentTarget.reset();
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor={nameInputId}>
-        Input name
+      <label>
+        Name:
         <input
           type="text"
-          value={name}
-          onChange={handleInput}
           name="name"
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+          title="Name may contain only letters, apostrophe, dash and spaces."
           required
-          id={nameInputId}
         />
       </label>
       <label>
-        Number
+        Number:
         <input
           type="tel"
-          value={number}
-          onChange={handleInput}
           name="number"
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
@@ -64,8 +45,8 @@ const ContactForm = ({ onSubmit }) => {
   );
 };
 
-export default ContactForm;
-
 ContactForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
+
+export default ContactForm;

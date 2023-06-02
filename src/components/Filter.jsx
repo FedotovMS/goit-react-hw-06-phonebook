@@ -7,12 +7,12 @@ const Filter = ({ filter, onSearch }) => (
     name="filter"
     value={filter || ''}
     onChange={onSearch}
-    placeholder="Search contacts"
+    placeholder="Type name"
   />
 );
 
 Filter.propTypes = {
-  value: PropTypes.string,
+  filter: PropTypes.string,
   onSearch: PropTypes.func.isRequired,
 };
 

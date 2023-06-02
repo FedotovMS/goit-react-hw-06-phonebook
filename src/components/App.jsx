@@ -1,52 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import ContactForm from './ContactForm';
 import ContactList from './ContactList';
 import Filter from './Filter';
-import { nanoid } from 'nanoid';
+import { setFilter } from 'redux/filterSclice';
+import { addContact, deleteContact } from 'redux/contactsSlice';
 
 export default function App() {
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState('');
+  const dispatch = useDispatch();
+
+  const filter = useSelector(state => state.filter);
+  const contacts = useSelector(state => state.contacts);
 
   useEffect(() => {
     const contacts = localStorage.getItem('contacts');
     const parsedContacts = JSON.parse(contacts);
 
     if (parsedContacts && parsedContacts.length > 0) {
-      setContacts(parsedContacts);
+      dispatch(addContact(parsedContacts));
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
   const handleFilter = e => {
-    setFilter(e.currentTarget.value);
+    dispatch(setFilter(e.currentTarget.value));
   };
 
   const handleDelete = contactId => {
-    setContacts(prevState =>
-      prevState.filter(contact => contact.id !== contactId)
-    );
+    dispatch(deleteContact(contactId));
   };
 
-  const formSubmitHandler = data => {
-    const existingContact = contacts.find(
-      contact => contact.name.toLowerCase() === data.name.toLowerCase()
-    );
-
-    if (existingContact) {
-      alert(`${data.name} is already in contacts!`);
-      return;
-    }
-    const newContact = {
-      id: nanoid(),
-      name: data.name,
-      number: data.number,
-    };
-    setContacts(prevState => [...prevState, newContact]);
-  };
+  const formSubmitHandler = data => {};
 
   const filteredContacts = contacts.filter(contact =>
     contact.name.toLowerCase().includes(filter.toLowerCase())
@@ -57,12 +44,11 @@ export default function App() {
       <h1>Phonebook</h1>
       <ContactForm onSubmit={formSubmitHandler} />
       <h2>Contacts</h2>
-      {/* {filteredContacts.length > 0 && ( */}
+
       <>
         <Filter filter={filter} onSearch={handleFilter} />
         <ContactList contacts={filteredContacts} onDelete={handleDelete} />
       </>
-      {/* )} */}
     </div>
   );
 }
