@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { addContact } from 'redux/contactsSlice';
+import { addContact } from '../redux/contactsSlice';
 
 const ContactForm = ({ onSubmit }) => {
   const dispatch = useDispatch();
